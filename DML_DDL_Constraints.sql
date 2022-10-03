@@ -1,3 +1,4 @@
+--INTRODUCTION TO MS SQL SERVER
 --create database - collection of tables
 create database TE
 --create table - collection of rows and columns
