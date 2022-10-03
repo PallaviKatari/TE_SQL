@@ -103,6 +103,131 @@ select * from Employee order by EDeptNo,EAge
 select * from Employee order by EAge,EDeptNo
 select * from Employee order by EAge,EDeptNo desc
 
+--Aggregate functions - sum,count,min,max,avg
+select avg(EAge) as 'Average Age' from Employee
+--Group by
+select EDesignation,avg(EAge) as 'Average Age' from Employee group by EDesignation
+--apply a condition - having clause
+select EDesignation,avg(EAge) as 'Average Age' from Employee group by EDesignation having avg(EAge)>23
+
+--Between And
+select * from Employee where EDeptNo between 101 and 104
+select * from Employee where EDeptNo not between 101 and 104
+
+--IN and Not IN
+select * from Employee where EDeptNo IN(101,103)
+select * from Employee where EName Not IN('John','Sam','Lea')
+
+--Schema - default schema dbo
+--create
+--Staff
+create schema Staff
+create table Staff.Registration
+(
+RID int,
+RName varchar(20)
+)
+--Students
+create schema Students
+create table Students.Registration
+(
+RID int,
+RName varchar(20)
+)
+--Admin
+create schema Admin
+create table Admin.Registration
+(
+RID int,
+RName varchar(20)
+)
+
+--drop schema
+drop schema if exists Staff
+drop table Staff.Registration
+
+--Cascading Referential Integrity
+--Tables - Orders and Customers
+
+create table customers
+(
+CID int Primary Key,
+CName varchar(20) Not Null,
+CAddress varchar(25) Not Null,
+OrderID int unique Not Null
+)
+
+create table Orders
+(
+OrderNo int Primary Key IDENTITY(1,1),
+OrderID int references customers(OrderID),
+CID int references customers(CID)
+)
+
+select * from customers
+select * from orders
+
+--STEP 1 (No Action while delete/update)
+
+--The DELETE statement conflicted with the REFERENCE constraint "FK__Orders__OrderID__44FF419A". 
+--The conflict occurred in database "TE", table "dbo.Orders", column 'OrderID'.
+delete from customers where CID=101
+--The UPDATE statement conflicted with the REFERENCE constraint "FK__Orders__CID__45F365D3". The conflict occurred in database "TE", table "dbo.Orders", column 'CID'.
+update customers set CID=1001 where CID=101
+
+--REFERENTIAL INTEGRITY
+-----------------------------
+--STEP 2 (on delete cascade on update cascade)
+
+--alter the constraint/rule for the column CID->Orders table
+
+alter table orders drop constraint [FK__Orders__CID__45F365D3]
+alter table orders add constraint Orders_CID foreign key(CID) references customers(CID) on delete cascade on update cascade;
+
+update customers set CID=1001 where CID=101
+
+delete from customers where CID=1001
+
+select * from customers
+select * from orders
+
+--STEP 3 (on delete set null on update set null
+alter table orders drop constraint Orders_CID
+alter table orders add constraint Orders_CID foreign key(CID) references customers(CID) on delete set null on update set null;
+
+alter table orders drop constraint [Orders_OrderID]
+
+update customers set CID=1001 where CID=101
+
+delete from customers where CID=102
+
+--STEP 4 (on delete set default on update set default)
+--You cannot update or delete the row which is having the default value
+
+drop table orders
+drop table customers
+
+create table customers
+(
+CID int Primary Key,
+CName varchar(20) Not Null,
+CAddress varchar(25) Not Null,
+OrderID int unique Not Null
+)
+
+create table Orders
+(
+OrderNo int Primary Key IDENTITY(1,1),
+OrderID int,
+CID int default 100 references customers(CID) on delete set default on update set default
+)
+
+select * from customers
+select * from orders
+
+update customers set CID=10 where CID=100
+
+delete from customers where CID=101
 
 
 
