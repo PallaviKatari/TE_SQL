@@ -48,7 +48,7 @@ select * from Student_Dept
 select s.SID,s.SName,sd.DID,sd.DName,sd.DHead 
 from Students as s LEFT join Student_Dept as sd on s.SDept=sd.DID;
 
---LEFT - Students(Left) and Student_Dept(Right)
+--RIGHT - Students(Left) and Student_Dept(Right)
 --All the rows from the right table and replace the non-matching values with NULL in the left table
 select s.SID,s.SName,sd.DID,sd.DName,sd.DHead 
 from Students as s RIGHT join Student_Dept as sd on s.SDept=sd.DID;
